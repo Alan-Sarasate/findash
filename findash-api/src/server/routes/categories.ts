@@ -1,7 +1,7 @@
-import express, { response } from 'express'
+import { Router } from 'express'
 import pool from '../database'
 
-const categorieRoutes = express.Router()
+const categorieRoutes = Router()
 
 categorieRoutes.post('/categories', (req, res) => {
     const { name, type } = req.body
@@ -54,4 +54,4 @@ categorieRoutes.delete('/categories/:id', (req, res) => {
     })
 })
 
-export { categorieRoutes }
+export default categorieRoutes
