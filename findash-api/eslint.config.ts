@@ -15,6 +15,7 @@ export default defineConfig([
   { files: ["**/*.md"], plugins: { markdown }, language: "markdown/gfm", extends: ["markdown/recommended"] },
   { files: ["**/*.css"], plugins: { css }, language: "css/css", extends: ["css/recommended"] },
   { rules: {
-      "@typescript-eslint/no-unused-vars": ["off"]
+      "@typescript-eslint/no-unused-vars": ["off"],
+      "@typescript-eslint/no-empty-object-type": ["off"]
   }}
 ]);
