@@ -1,4 +1,4 @@
-import type { Request, RequestHandler, Response } from "express";
+import type { Request, Response } from "express";
 import pool from "../../database";
 import { StatusCodes } from "http-status-codes"
 import * as z from 'zod'

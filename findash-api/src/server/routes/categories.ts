@@ -5,12 +5,12 @@ const categorieRoutes = Router()
 
 categorieRoutes.post('/categories', categorieController.createCategorieValidation, categorieController.createCategorie)
 
-categorieRoutes.get('/categories', categorieController.getAllCategories)
+categorieRoutes.get('/categories', categorieController.getAllCategoriesValidation ,categorieController.getAllCategories)
 
-categorieRoutes.get('/categories/:id', categorieController.getById)
+categorieRoutes.get('/categories/:id', categorieController.getByIdValidation ,categorieController.getById)
 
-categorieRoutes.patch('/categories/:id', categorieController.updateCategorie)
+categorieRoutes.patch('/categories/:id', categorieController.updateCategorieValidation, categorieController.updateCategorie)
 
-categorieRoutes.delete('/categories/:id', categorieController.deleteCategorie)
+categorieRoutes.delete('/categories/:id', categorieController.deleteCategorieValidation ,categorieController.deleteCategorie)
 
 export default categorieRoutes
