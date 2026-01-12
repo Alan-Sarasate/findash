@@ -3,7 +3,7 @@ import { categorieController } from '../controllers'
 
 const categorieRoutes = Router()
 
-categorieRoutes.post('/categories', categorieController.createCategorie)
+categorieRoutes.post('/categories', categorieController.createCategorieValidation, categorieController.createCategorie)
 
 categorieRoutes.get('/categories', categorieController.getAllCategories)
 
