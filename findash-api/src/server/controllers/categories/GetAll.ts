@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middlewares";
 import z from "zod";
 
-interface IQueryProps {
+export interface IQueryProps {
     page?: number | undefined,
     limit?: number | undefined,
     search?: string | undefined
@@ -32,6 +32,9 @@ export const getAllCategories = (req:Request<{}, {}, {}, IQueryProps>, res:Respo
         if(error) return res.status(StatusCodes.BAD_REQUEST).send(error)
 
         const categories = response.rows
+
+        res.header('acess-control-expose-header', 'x-total-count')
+        res.header('x-total-count', String(categories.length))
 
         return res.status(StatusCodes.OK).send(categories)
     })

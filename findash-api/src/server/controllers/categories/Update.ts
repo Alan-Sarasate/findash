@@ -29,6 +29,12 @@ export const updateCategorie = (req:Request, res:Response) => {
 
     pool.query("UPDATE categories SET name=$1, type=$2 WHERE id=$3 RETURNING *", [name, type, id], (error, response) => {
         if(error) return res.status(StatusCodes.BAD_REQUEST).send(error)
+        
+        if(response.rowCount === 0) return res.status(StatusCodes.NOT_FOUND).json({
+            error: {
+                message: "Categoria não encontrada."
+            }
+        })
 
         const updatedCategorie = response.rows[0]
 
