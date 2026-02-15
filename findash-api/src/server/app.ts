@@ -1,7 +1,10 @@
 import { router } from "./routes";
-import { server } from "./server";
 import express  from "express";
+import { Cors } from "./shared/middlewares";
 
+const server = express();
+
+server.use(Cors)
 server.use(express.json())
 server.use('/', router)
 

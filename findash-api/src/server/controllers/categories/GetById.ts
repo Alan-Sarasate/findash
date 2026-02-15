@@ -28,8 +28,8 @@ export const getById = (req:Request, res:Response) => {
             }
         })
         
-        const categorie = response.rows[0]
+        const category = response.rows[0]
 
-        return res.status(StatusCodes.OK).send(categorie)
+        return res.status(StatusCodes.OK).send(category)
     })
 }

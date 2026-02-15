@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import pool from "../../database";
 import { StatusCodes } from "http-status-codes";
-import type { CategorieBody } from "./types";
+import type { CategoryBody } from "./types";
 import z from "zod";
 import { validation } from "../../shared/middlewares";
 
@@ -9,8 +9,8 @@ export interface IParamsProps {
     id: number;
 }
 
-export const updateCategorieValidation = validation((GetSchema) => ({
-    body: GetSchema<CategorieBody>(z.object({
+export const updateCategoryValidation = validation((GetSchema) => ({
+    body: GetSchema<CategoryBody>(z.object({
         name: z.string("O nome da categoria é obrigatório").min(2, "O nome da categoria deve ter ao menos 2 caracteres"),
         type: z.enum(['income', 'expense'], "O tipo da categoria deve ser entrada (income) ou saída (expense).")
     })),

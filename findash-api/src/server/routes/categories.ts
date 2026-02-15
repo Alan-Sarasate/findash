@@ -1,16 +1,16 @@
 import { Router } from 'express'
-import { categorieController } from '../controllers'
+import { categoryController } from '../controllers'
 
-const categorieRoutes = Router()
+const categoryRoutes = Router()
 
-categorieRoutes.post('/categories', categorieController.createCategorieValidation, categorieController.createCategorie)
+categoryRoutes.post('/categories', categoryController.createCategoryValidation, categoryController.createCategory)
 
-categorieRoutes.get('/categories', categorieController.getAllCategoriesValidation ,categorieController.getAllCategories)
+categoryRoutes.get('/categories', categoryController.getAllCategoriesValidation ,categoryController.getAllCategories)
 
-categorieRoutes.get('/categories/:id', categorieController.getByIdValidation ,categorieController.getById)
+categoryRoutes.get('/categories/:id', categoryController.getByIdValidation ,categoryController.getById)
 
-categorieRoutes.patch('/categories/:id', categorieController.updateCategorieValidation, categorieController.updateCategorie)
+categoryRoutes.patch('/categories/:id', categoryController.updateCategoryValidation, categoryController.updateCategory)
 
-categorieRoutes.delete('/categories/:id', categorieController.deleteCategorieValidation ,categorieController.deleteCategorie)
+categoryRoutes.delete('/categories/:id', categoryController.deleteCategoryValidation ,categoryController.deleteCategory)
 
-export default categorieRoutes
+export default categoryRoutes

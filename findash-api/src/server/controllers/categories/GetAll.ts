@@ -28,7 +28,9 @@ export const getAllCategoriesValidation = validation((GetSchema) => ({
 
 export const getAllCategories = (req:Request<{}, {}, {}, IQueryProps>, res:Response) => {
 
-    pool.query("SELECT * FROM categories", (error, response) => {
+    const offset = 20 * ((req?.query?.page || 1) - 1)
+
+    pool.query("SELECT * FROM categories ORDER BY created_at LIMIT 20 OFFSET $1", [offset], (error, response) => {
         if(error) return res.status(StatusCodes.BAD_REQUEST).send(error)
 
         const categories = response.rows

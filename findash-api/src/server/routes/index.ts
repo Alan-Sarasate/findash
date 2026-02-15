@@ -7,4 +7,4 @@ const router = Router()
 router.use(categorieRoutes)
 router.use(dashboardRoutes)
 
-export {router }
+export { router }

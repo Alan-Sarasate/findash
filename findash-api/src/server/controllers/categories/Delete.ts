@@ -8,7 +8,7 @@ interface IParamsProps {
     id: number;
 }
 
-export const deleteCategorieValidation = validation((GetSchema) => ({
+export const deleteCategoryValidation = validation((GetSchema) => ({
     params: GetSchema<IParamsProps>(z.object({
         id: z.coerce
             .number("O id da categoria precisa ser numérico.")
@@ -17,7 +17,7 @@ export const deleteCategorieValidation = validation((GetSchema) => ({
     }))
 }))
 
-export const deleteCategorie = (req:Request, res:Response) => {
+export const deleteCategory = (req:Request, res:Response) => {
     const id = req.params?.id
 
     pool.query("DELETE FROM categories where id=$1", [id], (error, response) => {

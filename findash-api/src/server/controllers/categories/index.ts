@@ -4,6 +4,6 @@ import * as Update from "./Update";
 import * as GetById from "./GetById";
 import * as Delete from "./Delete"
 
-export const categorieController = {
+export const categoryController = {
     ...Create, ...GetAll, ...Update, ...GetById, ...Delete
 }
