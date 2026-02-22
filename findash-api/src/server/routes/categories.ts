@@ -9,7 +9,7 @@ categoryRoutes.get('/categories', categoryController.getAllCategoriesValidation 
 
 categoryRoutes.get('/categories/:id', categoryController.getByIdValidation ,categoryController.getById)
 
-categoryRoutes.patch('/categories/:id', categoryController.updateCategoryValidation, categoryController.updateCategory)
+categoryRoutes.put('/categories/:id', categoryController.updateCategoryValidation, categoryController.updateCategory)
 
 categoryRoutes.delete('/categories/:id', categoryController.deleteCategoryValidation ,categoryController.deleteCategory)
 

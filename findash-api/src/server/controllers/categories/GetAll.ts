@@ -3,12 +3,22 @@ import pool from "../../database";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middlewares";
 import z from "zod";
+import type { Category } from "../../shared/types/Category";
 
 export interface IQueryProps {
     page?: number | undefined,
     limit?: number | undefined,
     search?: string | undefined
 }
+
+export interface IGetAllResponse {
+    totalItems: number, 
+    totalPages: number, 
+    page: number,
+    data: Category[]
+}
+
+const ITEMS_PER_PAGE = 20
 
 export const getAllCategoriesValidation = validation((GetSchema) => ({
     query: GetSchema<IQueryProps>(z.object({
@@ -26,18 +36,27 @@ export const getAllCategoriesValidation = validation((GetSchema) => ({
     }))
 }))
 
-export const getAllCategories = (req:Request<{}, {}, {}, IQueryProps>, res:Response) => {
+export const getAllCategories = async (req:Request<{}, {}, {}, IQueryProps>, res:Response) => {
 
-    const offset = 20 * ((req?.query?.page || 1) - 1)
+    const offset = ITEMS_PER_PAGE * ((req?.query?.page || 1) - 1)
 
-    pool.query("SELECT * FROM categories ORDER BY created_at LIMIT 20 OFFSET $1", [offset], (error, response) => {
-        if(error) return res.status(StatusCodes.BAD_REQUEST).send(error)
+    try{
+        const categories = pool.query("SELECT * FROM categories ORDER BY created_at DESC LIMIT $1 OFFSET $2", [ITEMS_PER_PAGE, offset])
+        const categoriesCount = pool.query("SELECT COUNT(*) FROM categories")
 
-        const categories = response.rows
+        const [categoriesResponse, countResponse] = await Promise.all([categories, categoriesCount])
+        const count = Number(countResponse?.rows[0]?.count ?? 1)
 
-        res.header('acess-control-expose-header', 'x-total-count')
-        res.header('x-total-count', String(categories.length))
+        const response:IGetAllResponse = {
+            data: categoriesResponse.rows ?? [],
+            page: req?.query?.page ?? 1,
+            totalItems: count,
+            totalPages: Math.ceil(count/ITEMS_PER_PAGE)
+        }
 
-        return res.status(StatusCodes.OK).send(categories)
-    })
+        return res.status(200).send(response)
+
+    }catch(error){
+        return res.status(StatusCodes.BAD_REQUEST).send(error)
+    }
 }

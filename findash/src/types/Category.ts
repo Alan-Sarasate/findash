@@ -4,3 +4,8 @@ export interface Category {
     created_at: EpochTimeStamp,
     type: 'income' | 'expense'
 }
+
+export interface ICategoryPayload {
+    name: string,
+    type: string
+}

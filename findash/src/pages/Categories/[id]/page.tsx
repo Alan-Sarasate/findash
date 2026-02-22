@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import type { Category } from "../../../types/Category"
 import { ExcludeCategorySection } from "../../../components/excludeCategorySection"
 
 export const CategoryPage = () => {
 
     const navigate = useNavigate()
+    const location = useLocation()
 
     const CATEGORY_TYPES_MAPPING = {
         'expense': "Saída",
@@ -57,9 +58,19 @@ export const CategoryPage = () => {
         console.log("Response: ", response)
     }
 
+    const handleBackNavigation = () => {
+        const page = location?.state?.page
+        if(page) {
+            navigate(`/categories?page=${page}`)
+            return
+        }
+
+        navigate('/categories')
+    }
+
     return (
         <div>
-            <button onClick={() => navigate('/categories')}>Voltar</button>
+            <button onClick={handleBackNavigation}>Voltar</button>
             <button onClick={() => openSectionExcludeCategory()}>Excluir categoria</button>
             <div>
                 <h1>Detalhes da categoria: {`#${category?.id || 0} - ${category?.name || "Categoria não encontrada"}`}</h1>

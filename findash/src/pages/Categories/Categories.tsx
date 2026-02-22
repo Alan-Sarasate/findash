@@ -1,104 +1,158 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import type { Category } from "../../types/Category"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import type { Category, ICategoryPayload } from "../../types/Category"
 import { ExcludeCategorySection } from "../../components/excludeCategorySection"
+import { CategoryForm } from "../../components/forms/CategoryForm"
 
 export const CategoriesPage = () => {
   
   const navigate = useNavigate()
 
   const [categories, setCategories] = useState<Category[]>([])
-  const [page, setPage] = useState(1)
   const [isOpen, setIsOpen] = useState(false)
   const [refetch, setRefetch] = useState(0)
   const [selectedCategory, setSelectedCategory] = useState<Category|null>(null)
+  const [formKey, setFormKey] = useState<string | null>(null)
+
+  const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false)
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined)
+  const [categoryFormOperation, setCategoryFormOperation] = useState<'create' | 'update'>('create')
+  const [categoryFormDefaultValues, setCategoryFormDefaultValues] = useState<ICategoryPayload | undefined>(undefined)
+
+  const [searchParams, setSearchParams] = useSearchParams({page: "1"})
+  const [maxPage, setMaxPage] = useState(1)
+
+  interface IGetAllResponse {
+    totalItems: number, 
+    totalPages: number, 
+    page: number,
+    data: Category[]
+}
 
   useEffect(() => {
     const getAllCategories = async () => {
       try{
-        console.log(1)
+        const page = searchParams.get('page') || 1
         const response = await fetch(import.meta.env.VITE_BACKEND_URL+`/categories?page=${page}`)
-        console.log(2)
-        const data = await response.json()
-        setCategories(data)
-        console.log("Os dados: ",data)
+        console.log("RESPONSE: ", response)
+        const data:IGetAllResponse = await response.json()
+        setCategories(data?.data || [])
+        setMaxPage(data?.totalPages ?? 1)
       } catch(err) {
         console.log("O erro:", err)
       }
     }
 
     getAllCategories()
-  },[page, refetch])
+  },[searchParams, refetch])
 
-  const nextPageHandleClickPage = () => {
-    setPage(page => page + 1)
+  const nextPageHandleClick = () => {
+    const page = Number(searchParams.get('page')) || 1
+    if(page >= maxPage) return
+    setSearchParams({page: String(page + 1)})
   }
 
-  const previousPageHancleClick = () => {
+  const previousPageHandleClick = () => {
+    const page = Number(searchParams.get('page')) || 1
     if(page <= 1) return
-    setPage(page => page - 1)
+    setSearchParams({page: String(Number(page) - 1)})
   }
 
   const handleViewCategorieDetails = (id:string) => {
-    navigate(`/categories/${id}`)
+    navigate(`/categories/${id}`, {state: {
+      page: searchParams.get('page')
+    }})
   }
 
-  const openSectionExcludeCategory = (selectedCategory:Category) => {
+  const openExcludeCategorySection = (selectedCategory:Category) => {
     setSelectedCategory(selectedCategory)
+    closeCategoryFormSection()
     setIsOpen(true)
   }
 
-  const closeSectionExcludeCategory = () => {
+  const closeExcludeCategorySection = () => {
     setSelectedCategory(null)
     setIsOpen(false)
   }
 
   const handleDeleteCategory = async (categoryId:string) => {
         if(!categoryId) {
-            closeSectionExcludeCategory()
+            closeExcludeCategorySection()
             return
         }
+
         const url = `${import.meta.env.VITE_BACKEND_URL}/categories/${categoryId}`
-        const response = await fetch(url, {
+
+        try{
+          await fetch(url, {
             method: "DELETE"
-        }).then(() => {
-            alert("Categoria excluída com sucesso")
-            closeSectionExcludeCategory()
-            setRefetch(refetch => refetch+1)
-        }).catch(erro => {
-            alert(erro)
-        })
-        console.log("Response: ", response)
-    }
+          })
+          alert("Categoria excluída com sucesso")
+          closeExcludeCategorySection()
+          setRefetch(refetch => refetch+1)
+        }catch(err){
+          alert(err)
+        }
+  }
+
+  const openCategoryFormSection = (operationType: 'create' | 'update' = 'create', categoryId?: string, defaultValues?: ICategoryPayload) => {
+    closeExcludeCategorySection()
+    setCategoryFormOperation(operationType)
+    setCategoryId(categoryId)
+    setCategoryFormDefaultValues(defaultValues)
+    setFormKey(operationType === 'create' ? String(Date.now()) : (categoryId || String(Date.now())))
+    setIsCategoryFormOpen(true)
+  }
+
+  const closeCategoryFormSection = () => setIsCategoryFormOpen(false)
+
+  const onSucessFormCategory = () => {
+    if(categoryFormOperation === 'create') setSearchParams({page: '1'})
+    setRefetch(refetch => refetch+1)
+    closeCategoryFormSection()
+    alert(`Categoria ${categoryFormOperation === "create" ? "criada" : "editada"} com sucesso`);
+  }
 
   return (
       <>
+        <div>
+          <button onClick={() => openCategoryFormSection()}>Criar categoria</button>
+        </div>
+        <div>
+          {categories.map((category, index) => 
+              <div key={category?.id}>
+                <span>{`${category?.id || index} - ${category?.name || "Categoria"}`}</span>
+                <>
+                  <button onClick={() => handleViewCategorieDetails(category?.id)}>Visualizar</button>
+                  <button onClick={() => openCategoryFormSection('update', category?.id, {name: category?.name, type: category?.type})}>Editar</button>
+                  <button onClick={() => openExcludeCategorySection(category)}>Excluir</button>
+                </>
+          </div>)}
           <div>
-              {categories.map((category, index) => 
-                  <div key={category?.id}>
-                      <span>{`${category?.id || index} - ${category?.name || "Categoria"}`}</span>
-                      <>
-                        <button onClick={() => handleViewCategorieDetails(category?.id)}>Visualizar</button>
-                        <button onClick={() => openSectionExcludeCategory(category)}>Excluir</button>
-                      </>
-                  </div>)}
-              <div>
-                  <button onClick={previousPageHancleClick}>Anterior</button>
-                  <span>{page}</span>
-                  <button onClick={nextPageHandleClickPage}>Próximo</button>
-              </div>
-
-
-              {isOpen && <>
-                  <ExcludeCategorySection 
-                      categoryName={selectedCategory?.name || "Categoria não encontrada"}
-                      cancelFunction={() => closeSectionExcludeCategory()}
-                      deleteFunction={() => {
-                          if(!selectedCategory) return
-                          handleDeleteCategory(selectedCategory?.id)
-                      }}/>
-              </>}    
+            <button onClick={previousPageHandleClick}>Anterior</button>
+            <span>{searchParams.get('page')}</span>
+            <button onClick={nextPageHandleClick}>Próximo</button>
           </div>
+
+          {isCategoryFormOpen && 
+            <CategoryForm
+              key={formKey}
+              type={categoryFormOperation} 
+              onSucess={onSucessFormCategory} 
+              onCancel={closeCategoryFormSection}
+              defaultValues={categoryFormDefaultValues}
+              categoryId={categoryId}/>}
+
+          {isOpen && <>
+            <ExcludeCategorySection
+              categoryName={selectedCategory?.name || "Categoria não encontrada"}
+              cancelFunction={() => closeExcludeCategorySection()}
+              deleteFunction={() => {
+                  if(!selectedCategory) return
+                  handleDeleteCategory(selectedCategory?.id)
+              }}/>
+          </>}    
+        </div>
       </>
   )
 }

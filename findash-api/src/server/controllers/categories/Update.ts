@@ -22,10 +22,10 @@ export const updateCategoryValidation = validation((GetSchema) => ({
     }))
 }))
 
-export const updateCategorie = (req:Request, res:Response) => {
+export const updateCategory = (req:Request, res:Response) => {
 
     const { id } = req.params
-    const { name, type } = req.body as CategorieBody
+    const { name, type } = req.body as CategoryBody
 
     pool.query("UPDATE categories SET name=$1, type=$2 WHERE id=$3 RETURNING *", [name, type, id], (error, response) => {
         if(error) return res.status(StatusCodes.BAD_REQUEST).send(error)
