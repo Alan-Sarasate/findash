@@ -7,5 +7,5 @@ export interface Category {
 
 export interface ICategoryPayload {
     name: string,
-    type: string
+    type: 'income' | 'expense'
 }

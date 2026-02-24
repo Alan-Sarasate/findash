@@ -17,19 +17,22 @@ export const getByIdValidation = validation((GetSchema) => ({
     }))
 }))
 
-export const getById = (req:Request, res:Response) => {
-    const id = req.params?.id
-    pool.query("SELECT * from categories where id=$1", [id], (error, response) => {
-        if(error) return res.status(StatusCodes.BAD_REQUEST).send(error)
+export const getById = async (req:Request, res:Response) => {
+    try {
+        const id = req.params?.id
+        const getByIdQuery = await pool.query("SELECT * from categories where id=$1", [id])
 
-        if(response.rowCount === 0) return res.status(StatusCodes.NOT_FOUND).send({
+        if(getByIdQuery.rowCount === 0) return res.status(StatusCodes.NOT_FOUND).send({
             error: {
                 message: "Categoria não encontrada."
             }
         })
         
-        const category = response.rows[0]
+        const category = getByIdQuery.rows[0]
 
         return res.status(StatusCodes.OK).send(category)
-    })
+    }catch(error){
+        return res.status(StatusCodes.BAD_REQUEST).send(error)
+    }
+    
 }

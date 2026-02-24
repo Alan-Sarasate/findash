@@ -1,12 +1,13 @@
 import { useForm } from "react-hook-form"
 import type { ICategoryPayload } from "../../types"
+import { API_BASE_URL } from "../../config/api"
 
 interface ICategoryFormProps {
     type?: 'create' | 'update'
     categoryId?: string
     defaultValues?: ICategoryPayload
     onCancel: () => void
-    onSucess: () => void
+    onSuccess: () => void
 }
 
 interface IUpdateCategoryPayload {
@@ -14,7 +15,7 @@ interface IUpdateCategoryPayload {
     data: ICategoryPayload
 }
 
-export const CategoryForm = ({ type = 'create', categoryId, defaultValues, onCancel, onSucess }:ICategoryFormProps) => {
+export const CategoryForm = ({ type = 'create', categoryId, defaultValues, onCancel, onSuccess }:ICategoryFormProps) => {
     
     const { register, handleSubmit, reset, formState: { errors }} = useForm<ICategoryPayload>({
         defaultValues
@@ -22,10 +23,7 @@ export const CategoryForm = ({ type = 'create', categoryId, defaultValues, onCan
 
     const createCategory = async (data: ICategoryPayload) => {
         try{
-            const backendUrl = import.meta.env.VITE_BACKEND_URL
-            if(!backendUrl) throw new Error("Url do backend não encontrada.")
-
-            const url = `${backendUrl}/categories`
+            const url = `${API_BASE_URL}/categories`
 
             const response =  await fetch(url, {
                 method: "POST",
@@ -41,19 +39,15 @@ export const CategoryForm = ({ type = 'create', categoryId, defaultValues, onCan
             console.log("Nova categoria: ", newCategory)
 
             reset()
-            onSucess()
+            onSuccess()
         }catch(error) {
             alert(error)
-            console.log(error)
         }
     }
 
     const updateCategory = async ({ categoryId, data }:IUpdateCategoryPayload) => {
         try{
-            const backendUrl = import.meta.env.VITE_BACKEND_URL
-            if(!backendUrl) throw new Error("Url do backend não encontrada.")
-
-            const url = `${backendUrl}/categories/${categoryId}`
+            const url = `${API_BASE_URL}/categories/${categoryId}`
 
             const response = await fetch(url, {
                 method: "PUT",
@@ -69,7 +63,7 @@ export const CategoryForm = ({ type = 'create', categoryId, defaultValues, onCan
             console.log("Categoria editada: ", editCategory)
 
             reset()
-            onSucess()
+            onSuccess()
         }catch(error){
             alert(error)
             console.log(error)

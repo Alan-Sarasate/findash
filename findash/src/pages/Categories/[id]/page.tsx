@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import type { Category } from "../../../types/Category"
 import { ExcludeCategorySection } from "../../../components/excludeCategorySection"
+import { API_BASE_URL } from "../../../config/api"
 
 export const CategoryPage = () => {
 
@@ -24,7 +25,7 @@ export const CategoryPage = () => {
     useEffect(() => {
         const getCategoryById = async (categorieId:string) => {
 
-            const url = `${import.meta.env.VITE_BACKEND_URL}/categories/${categorieId}`
+            const url = `${API_BASE_URL}/categories/${categorieId}`
             console.log("url: ",url)
 
             const response = await fetch(url)
@@ -46,7 +47,7 @@ export const CategoryPage = () => {
             closeSectionExcludeCategory()
             return
         }
-        const url = `${import.meta.env.VITE_BACKEND_URL}/categories/${categoryId}`
+        const url = `${API_BASE_URL}/categories/${categoryId}`
         const response = await fetch(url, {
             method: "DELETE"
         }).then(() => {

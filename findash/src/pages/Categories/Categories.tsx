@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import type { Category, ICategoryPayload } from "../../types/Category"
 import { ExcludeCategorySection } from "../../components/excludeCategorySection"
 import { CategoryForm } from "../../components/forms/CategoryForm"
+import { API_BASE_URL } from "../../config/api"
 
 export const CategoriesPage = () => {
   
@@ -33,7 +34,7 @@ export const CategoriesPage = () => {
     const getAllCategories = async () => {
       try{
         const page = searchParams.get('page') || 1
-        const response = await fetch(import.meta.env.VITE_BACKEND_URL+`/categories?page=${page}`)
+        const response = await fetch(`${API_BASE_URL}/categories?page=${page}`)
         console.log("RESPONSE: ", response)
         const data:IGetAllResponse = await response.json()
         setCategories(data?.data || [])
@@ -81,13 +82,15 @@ export const CategoriesPage = () => {
             return
         }
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/categories/${categoryId}`
+        const url = `${API_BASE_URL}/categories/${categoryId}`
 
         try{
           await fetch(url, {
             method: "DELETE"
           })
           alert("Categoria excluída com sucesso")
+          const page = Number(searchParams.get('page') || 1)
+          if(categories.length === 1 && page > 1) setSearchParams({page: String(page - 1)}) 
           closeExcludeCategorySection()
           setRefetch(refetch => refetch+1)
         }catch(err){
@@ -106,7 +109,7 @@ export const CategoriesPage = () => {
 
   const closeCategoryFormSection = () => setIsCategoryFormOpen(false)
 
-  const onSucessFormCategory = () => {
+  const onSuccessFormCategory = () => {
     if(categoryFormOperation === 'create') setSearchParams({page: '1'})
     setRefetch(refetch => refetch+1)
     closeCategoryFormSection()
@@ -138,7 +141,7 @@ export const CategoriesPage = () => {
             <CategoryForm
               key={formKey}
               type={categoryFormOperation} 
-              onSucess={onSucessFormCategory} 
+              onSuccess={onSuccessFormCategory} 
               onCancel={closeCategoryFormSection}
               defaultValues={categoryFormDefaultValues}
               categoryId={categoryId}/>}
