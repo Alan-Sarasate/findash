@@ -3,25 +3,16 @@ import pool from "../../database";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middlewares";
 import z from "zod";
-import type { Category } from "../../shared/types/Category";
+import type { Category, PaginationParams, PaginationResponse } from "../../shared/types";
 
-export interface IQueryProps {
-    page?: number | undefined,
-    limit?: number | undefined,
+export interface ICategoryQueryParams extends PaginationParams {
     search?: string | undefined
-}
-
-export interface IGetAllResponse {
-    totalItems: number, 
-    totalPages: number, 
-    page: number,
-    data: Category[]
 }
 
 const ITEMS_PER_PAGE = 20
 
 export const getAllCategoriesValidation = validation((GetSchema) => ({
-    query: GetSchema<IQueryProps>(z.object({
+    query: GetSchema<ICategoryQueryParams>(z.object({
         page: z.coerce
             .number("A página precisa ser um valor numérico")
             .int("A página precisa ser um valor inteiro")
@@ -36,7 +27,7 @@ export const getAllCategoriesValidation = validation((GetSchema) => ({
     }))
 }))
 
-export const getAllCategories = async (req:Request<{}, {}, {}, IQueryProps>, res:Response) => {
+export const getAllCategories = async (req:Request<{}, {}, {}, ICategoryQueryParams>, res:Response) => {
 
     const offset = ITEMS_PER_PAGE * ((req?.query?.page || 1) - 1)
 
@@ -45,16 +36,16 @@ export const getAllCategories = async (req:Request<{}, {}, {}, IQueryProps>, res
         const categoriesCount = pool.query("SELECT COUNT(*) FROM categories")
 
         const [categoriesResponse, countResponse] = await Promise.all([categories, categoriesCount])
-        const count = Number(countResponse?.rows[0]?.count ?? 1)
+        const count = Number(countResponse?.rows[0]?.count ?? 0)
 
-        const response:IGetAllResponse = {
+        const response:PaginationResponse<Category> = {
             data: categoriesResponse.rows ?? [],
             page: req?.query?.page ?? 1,
             totalItems: count,
             totalPages: Math.ceil(count/ITEMS_PER_PAGE)
         }
 
-        return res.status(200).send(response)
+        return res.status(StatusCodes.OK).send(response)
 
     }catch(error){
         return res.status(StatusCodes.BAD_REQUEST).send(error)

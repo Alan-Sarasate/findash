@@ -24,7 +24,7 @@ export const CategoriesPage = () => {
   const [maxPage, setMaxPage] = useState(1)
 
   interface IGetAllResponse {
-    totalItems: number, 
+    totalItems: number,
     totalPages: number, 
     page: number,
     data: Category[]

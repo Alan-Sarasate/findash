@@ -2,33 +2,22 @@ import type { Request, Response } from "express";
 import pool from "../../database";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middlewares";
-import z from "zod";
-
-interface IParamsProps {
-    id: number;
-}
+import type { CategoryParams } from "./types";
+import { categoryParamsSchema } from "./schemas";
 
 export const deleteCategoryValidation = validation((GetSchema) => ({
-    params: GetSchema<IParamsProps>(z.object({
-        id: z.coerce
-            .number("O id da categoria precisa ser numérico.")
-            .int("O id da categoria precisa ser inteiro")
-            .min(1, "O id da categoria precisa ser mair que 0")
-    }))
+    params: GetSchema<CategoryParams>(categoryParamsSchema)
 }))
 
-export const deleteCategory = (req:Request, res:Response) => {
-    const id = req.params?.id
+export const deleteCategory = async (req:Request<CategoryParams>, res:Response) => {
+    try{
+        const { id: categoryId } = req.params
+        const response = await pool.query("DELETE FROM categories WHERE id=$1 RETURNING *", [categoryId])
 
-    pool.query("DELETE FROM categories where id=$1", [id], (error, response) => {
-        if(error) return res.status(StatusCodes.BAD_REQUEST).send(error)
+        const deletedCategory = await response.rows[0]
 
-        if(response.rowCount === 0) return res.status(StatusCodes.NOT_FOUND).send({
-        error: {
-            message: "Categoria não encontrada."
-        }
-        })
-
-        res.status(StatusCodes.NO_CONTENT).send()
-    })
+        return res.status(StatusCodes.OK).send(deletedCategory)
+    }catch(error){
+        return res.status(StatusCodes.BAD_REQUEST).send(error)
+    }
 }

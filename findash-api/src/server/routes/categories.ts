@@ -7,10 +7,10 @@ categoryRoutes.post('/categories', categoryController.createCategoryValidation, 
 
 categoryRoutes.get('/categories', categoryController.getAllCategoriesValidation ,categoryController.getAllCategories)
 
-categoryRoutes.get('/categories/:id', categoryController.getByIdValidation ,categoryController.getById)
+categoryRoutes.get('/categories/:id', categoryController.getByIdValidation, categoryController.getById)
 
 categoryRoutes.put('/categories/:id', categoryController.updateCategoryValidation, categoryController.updateCategory)
 
-categoryRoutes.delete('/categories/:id', categoryController.deleteCategoryValidation ,categoryController.deleteCategory)
+categoryRoutes.delete('/categories/:id', categoryController.deleteCategoryValidation, categoryController.deleteCategory)
 
 export default categoryRoutes

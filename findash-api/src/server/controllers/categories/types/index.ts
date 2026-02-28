@@ -1,1 +1,1 @@
-export type { CategoryBody } from './CategoryBody'
+export * from './Category.type'
