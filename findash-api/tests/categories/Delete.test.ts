@@ -3,14 +3,14 @@ import request from "supertest";
 import { app } from "../../src/server/app";
 import { StatusCodes } from "http-status-codes";
 
-describe('DELETE Categorie', () => {
+describe('DELETE Category', () => {
     it('Excluindo categoria que existe no banco', async () => {
         const res1 = await request(app).post('/categories').send({name: 'Categoria teste', type: 'income'})
         expect(res1.statusCode).toEqual(StatusCodes.CREATED)
         
         const res2 = await request(app).delete(`/categories/${res1?.body?.id}`).send()
 
-        expect(res2.statusCode).toEqual(StatusCodes.NO_CONTENT)
+        expect(res2.statusCode).toEqual(StatusCodes.OK)
     })
 
     it('Excluindo registro inexistente', async () => {

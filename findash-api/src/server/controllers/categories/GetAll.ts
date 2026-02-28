@@ -29,7 +29,8 @@ export const getAllCategoriesValidation = validation((GetSchema) => ({
 
 export const getAllCategories = async (req:Request<{}, {}, {}, ICategoryQueryParams>, res:Response) => {
 
-    const offset = ITEMS_PER_PAGE * ((req?.query?.page || 1) - 1)
+    const page = (req?.query?.page || 1)
+    const offset = ITEMS_PER_PAGE * (page - 1)
 
     try{
         const categories = pool.query("SELECT * FROM categories ORDER BY created_at DESC LIMIT $1 OFFSET $2", [ITEMS_PER_PAGE, offset])
@@ -40,7 +41,7 @@ export const getAllCategories = async (req:Request<{}, {}, {}, ICategoryQueryPar
 
         const response:PaginationResponse<Category> = {
             data: categoriesResponse.rows ?? [],
-            page: req?.query?.page ?? 1,
+            page: page,
             totalItems: count,
             totalPages: Math.ceil(count/ITEMS_PER_PAGE)
         }

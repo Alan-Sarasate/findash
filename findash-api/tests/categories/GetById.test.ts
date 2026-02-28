@@ -3,7 +3,7 @@ import request from 'supertest'
 import { app } from "../../src/server/app";
 import { StatusCodes } from "http-status-codes";
 
-describe('GETBYID Categories', () => {
+describe('GETBYID Category', () => {
     it('Buscando categoria existente', async () => {
         const res1 = await request(app).post('/categories').send({name: "Categoria teste", type: "expense"})
         expect(res1.statusCode).toEqual(StatusCodes.CREATED)

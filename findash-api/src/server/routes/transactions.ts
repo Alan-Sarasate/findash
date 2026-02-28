@@ -11,6 +11,6 @@ transactionsRoutes.post('/transactions', transactionsController.createTransactio
 
 transactionsRoutes.put('/transactions/:id', transactionsController.updateTransactioValidation, transactionsController.updateTransaction)
 
-transactionsRoutes.delete('/transaction/:id', transactionsController.deleteTransactionValidation, transactionsController.deleteTransaction)
+transactionsRoutes.delete('/transactions/:id', transactionsController.deleteTransactionValidation, transactionsController.deleteTransaction)
 
 export default transactionsRoutes

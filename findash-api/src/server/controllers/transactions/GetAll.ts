@@ -29,7 +29,7 @@ export const getAllTransactionsValidation = validation((GetSchema) => ({
 
 export const getAllTransactions = async (req:Request<{}, {}, {}, TransactionsQueryParams>, res: Response) => {
     const page = (req?.query?.page || 1)
-    const offset = ITEMS_PER_PAGE * page
+    const offset = ITEMS_PER_PAGE * (page - 1)
 
     try{
         const transactions = pool.query("SELECT * FROM transactions ORDER BY created_at DESC LIMIT $1 OFFSET $2", [ITEMS_PER_PAGE, offset])

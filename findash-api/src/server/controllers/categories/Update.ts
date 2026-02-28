@@ -18,6 +18,12 @@ export const updateCategory = async (req:Request<CategoryParams, {}, CategoryPay
 
         const response = await pool.query("UPDATE categories SET name=$1, type=$2 WHERE id=$3 RETURNING *", [name, type, categoryId])
 
+        if(response.rowCount === 0) return res.status(StatusCodes.NOT_FOUND).send({
+            error: {
+                message: "Categoria não encontrada"
+            }
+        })
+
         const updatedCategory = await response.rows[0]
         return res.status(StatusCodes.OK).send(updatedCategory)
 

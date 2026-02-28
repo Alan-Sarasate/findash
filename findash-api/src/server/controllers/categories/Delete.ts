@@ -14,7 +14,13 @@ export const deleteCategory = async (req:Request<CategoryParams>, res:Response) 
         const { id: categoryId } = req.params
         const response = await pool.query("DELETE FROM categories WHERE id=$1 RETURNING *", [categoryId])
 
-        const deletedCategory = await response.rows[0]
+        if(response.rowCount === 0) return res.status(StatusCodes.NOT_FOUND).send({
+            error: {
+                message: "Categoria não encontrada"
+            }
+        })
+
+        const deletedCategory = response.rows[0]
 
         return res.status(StatusCodes.OK).send(deletedCategory)
     }catch(error){

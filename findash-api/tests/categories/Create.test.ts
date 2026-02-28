@@ -4,7 +4,7 @@ import { app } from '../../src/server/app'
 import { StatusCodes } from 'http-status-codes'
 
 
-describe('POST categorie', () => {
+describe('POST category', () => {
     it('Criando uma categoria', async () => {
         const res1 = await request(app).post('/categories').send({name: "Categoria teste", type: "income"})
 
